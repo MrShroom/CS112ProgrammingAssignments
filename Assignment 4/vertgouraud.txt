@@ -1,0 +1,64 @@
+#version 330
+ 
+uniform mat4 viewMatrix, projMatrix;
+uniform mat3 normalMatrix;
+uniform vec4 ambientColor;
+uniform vec3 lightColor, lightPosition, EyeDirection;
+uniform float Shininess;
+uniform float k1 = 1.0, k2 = 0.0, k3 = 0.0;
+
+layout (location = 0) in vec4 position;
+in vec3 normal;
+in vec3 color;
+
+layout(location = 1) in vec2 vertexUV;
+ 
+out vec3 Color;
+out vec3 Normal;
+out vec4 Position;
+
+// UV is the texture coordinate of this vertex
+out vec2 UV;
+
+void main()
+{
+
+	vec3 V, L, H, amb , dif , spe ;
+	
+	float d, att, temp;
+
+	Normal = normalize(normalMatrix * normal);
+	
+	amb = color * vec3(ambientColor);
+
+	L = normalize( lightPosition - vec3(position) );
+	dif = color * lightColor;
+
+	temp = max(dot(L , normalize(normal)), 0.0);
+	dif *= temp ;
+
+
+	V = normalize(EyeDirection  );
+	H = normalize(L + V);
+
+	spe = color * lightColor;
+	temp =max( dot( H, normalize(normal)), 0);
+	spe *=  pow(temp,Shininess );
+	
+
+	d = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);
+	att = 1/ (k1 + k2 *d + k3* d*d);
+
+    Color = att *(amb + dif + spe);
+	
+	UV = vertexUV;
+	
+	// You need to multiply the projection (projMatrix) matrices and the model view (viewMatrix) and with the position in correct order
+	// After this step you should be able too see a blue cube in the middle of the window
+
+	//***************PART 1 DONE BELOW ***************
+    gl_Position =  projMatrix * viewMatrix * position;  
+	//***************PART 1 DONE ABOVE ***************
+}
+
+

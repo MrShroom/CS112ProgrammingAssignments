@@ -1,0 +1,27 @@
+#version 330
+uniform mat4 viewMatrix, projMatrix;
+
+uniform vec4 ambientColor;
+uniform vec3 lightColor;
+uniform vec3 lightPosition;
+uniform float Shininess;
+uniform float Strength;
+uniform vec3 EyeDirection;
+uniform float k1 = 1, k2 = 0, k3 = 0;
+
+uniform sampler2D myTextureSampler;
+
+in vec3 Color;
+in vec3 Normal;
+in vec4 Position;
+
+in vec2 UV;
+
+out vec4 outputF;
+ 
+void main()
+{
+
+    outputF = texture(myTextureSampler, UV);	
+	
+}

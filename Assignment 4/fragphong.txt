@@ -1,0 +1,52 @@
+#version 330
+uniform mat4 viewMatrix, projMatrix;
+
+//uniform vec4 Ambient;
+uniform vec4 ambientColor;
+//uniform vec3 LightColor;
+//uniform vec3 LightPosition;
+uniform vec3 lightColor;
+uniform vec3 lightPosition;
+uniform float Shininess;
+uniform float Strength;
+uniform vec3 EyeDirection;
+uniform float k1 = 1, k2 = 0, k3 = 0;
+
+uniform sampler2D myTextureSampler;
+
+in vec3 Color;
+in vec3 Normal;
+in vec4 Position;
+
+in vec2 UV;
+
+out vec4 outputF;
+ 
+void main()
+{
+	vec3 V, L, H, amb , dif , spe ;
+	
+	float d, att, temp;
+	
+	amb = Color *  vec3(ambientColor);
+
+	L = normalize( lightPosition - vec3(Position) );
+	dif = Color * lightColor;
+
+	temp = max(dot(L , normalize(Normal)), 0.0);
+	dif *= temp ;
+	
+	V = normalize(EyeDirection );
+	H = normalize(L + V);
+
+	spe = Color * lightColor;
+	temp =max( dot( H, normalize(Normal)), 0);
+	spe *= pow(temp,Shininess);
+	
+
+	d = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);
+	att = 1/ (k1 + k2 *d + k3* d*d);
+
+    outputF = vec4(att *(amb + dif + spe),1);
+	
+}
